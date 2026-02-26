@@ -1,6 +1,7 @@
 from torch import nn
 import torch
 
+
 class LayerNorm(nn.Module):
     def __init__(self, emb_dim):
         super().__init__()
@@ -13,5 +14,7 @@ class LayerNorm(nn.Module):
         mean = x.mean(dim=-1, keepdim=True)
         var = x.var(dim=-1, keepdim=True, unbiased=False)
 
-        norm_x = (x - mean) / torch.sqrt(var + self.eps) # Normalize to zero mean and variance of 1
+        norm_x = (x - mean) / torch.sqrt(
+            var + self.eps
+        )  # Normalize to zero mean and variance of 1
         return self.scale * norm_x + self.shift
