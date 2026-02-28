@@ -101,9 +101,12 @@ def generate_text(
     top_k: int = None,
     device: str = "cpu",
 ):
-    in_idx = (
-        torch.tensor(tokenizer.encode(text)).unsqueeze(0).to(device)
-    )  # Shape: (1, seq_len)
+    encoded = tokenizer.encode(text)
+    tokenized = tokenizer.decode_tokens_bytes(encoded)
+    print(f"tokenized input: {tokenized} | number of tokens: {len(encoded)}")
+    print(f"encoded input: {encoded}")
+
+    in_idx = torch.tensor(encoded).unsqueeze(0).to(device)  # Shape: (1, seq_len)
 
     model.eval()
     for _ in range(max_new_tokens):
@@ -111,7 +114,7 @@ def generate_text(
             :, -context_length:
         ]  # Crop context to the model's maximum context length
 
-        with torch.no_grad():
+        with torch.inference_mode():
             logits = model(in_idx_cond)
 
         # 1. Focus on the last step and apply temperature
